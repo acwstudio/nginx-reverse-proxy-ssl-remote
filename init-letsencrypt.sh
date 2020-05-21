@@ -77,4 +77,4 @@ docker-compose run --rm --entrypoint "\
 echo
 
 echo "### Reloading nginx ..."
-docker-compose exec nginx reverse -s reload
+docker-compose exec reverse nginx -s reload
