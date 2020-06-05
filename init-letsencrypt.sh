@@ -1,15 +1,26 @@
 #!/bin/bash
 
+set -o allexport
+source .env.ssl.example
+set +o allexport
+
 if ! [ -x "$(command -v docker-compose)" ]; then
   echo 'Error: docker-compose is not installed.' >&2
   exit 1
 fi
 
-domains=(oop-patterns.site www.oop-patterns.site acwstudio.site www.acwstudio.site)
-rsa_key_size=4096
-data_path="./etc/certbot"
-email="uistinkatu5a17@yandex.ru" # Adding a valid address is strongly recommended
-staging=1 # Set to 1 if you're testing your setup to avoid hitting request limits
+domains=($DOMAINS)
+rsa_key_size=$RSA_KEY_SIZE
+data_path=$DATA_PATH
+email=$EMAIL # Adding a valid address is strongly recommended
+staging=$STAGING # Set to 1 if you're testing your setup to avoid hitting request limits
+
+echo "### Downloading recommended TLS parameters ... $DOMAINS"
+echo "### Downloading recommended TLS parameters ... $domains"
+echo "### Downloading recommended TLS parameters ... $data_path"
+echo "### Downloading recommended TLS parameters ... $rsa_key_size"
+echo "### Downloading recommended TLS parameters ... $email"
+echo "### Downloading recommended TLS parameters ... $staging"
 
 if [ -d "$data_path" ]; then
   read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
@@ -27,9 +38,9 @@ if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/
   echo
 fi
 
-echo "### Creating dummy certificate for $domains ..."
-path="/etc/letsencrypt/live/$domains"
-mkdir -p "$data_path/conf/live/$domains"
+echo "### Creating dummy certificate for $DOMAINS ..."
+path="/etc/letsencrypt/live/ssl"
+mkdir -p "$data_path/conf/live/ssl"
 docker-compose run --rm --entrypoint "\
   openssl req -x509 -nodes -newkey rsa:1024 -days 1\
     -keyout '$path/privkey.pem' \
@@ -42,15 +53,15 @@ echo "### Starting nginx ..."
 docker-compose up --force-recreate -d reverse
 echo
 
-echo "### Deleting dummy certificate for $domains ..."
+echo "### Deleting dummy certificate for $DOMAINS ..."
 docker-compose run --rm --entrypoint "\
-  rm -Rf /etc/letsencrypt/live/$domains && \
-  rm -Rf /etc/letsencrypt/archive/$domains && \
-  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
+  rm -Rf /etc/letsencrypt/live/ssl && \
+  rm -Rf /etc/letsencrypt/archive/ssl && \
+  rm -Rf /etc/letsencrypt/renewal/ssl.conf" certbot
 echo
 
 
-echo "### Requesting Let's Encrypt certificate for $domains ..."
+echo "### Requesting Let's Encrypt certificate for $DOMAINS ..."
 #Join $domains to -d args
 domain_args=""
 for domain in "${domains[@]}"; do
