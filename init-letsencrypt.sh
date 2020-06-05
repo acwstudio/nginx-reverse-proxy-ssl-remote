@@ -15,12 +15,12 @@ data_path=$DATA_PATH
 email=$EMAIL # Adding a valid address is strongly recommended
 staging=$STAGING # Set to 1 if you're testing your setup to avoid hitting request limits
 
-echo "### Downloading recommended TLS parameters ... $DOMAINS"
-echo "### Downloading recommended TLS parameters ... $domains"
-echo "### Downloading recommended TLS parameters ... $data_path"
-echo "### Downloading recommended TLS parameters ... $rsa_key_size"
-echo "### Downloading recommended TLS parameters ... $email"
-echo "### Downloading recommended TLS parameters ... $staging"
+echo "### test ... $DOMAINS"
+echo "### test ... $domains"
+echo "### test ... $data_path"
+echo "### test ... $rsa_key_size"
+echo "### test ... $email"
+echo "### test ... $staging"
 
 if [ -d "$data_path" ]; then
   read -p "Existing data found for $DOMAINS. Continue and replace existing certificate? (y/N) " decision
@@ -39,8 +39,8 @@ if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/
 fi
 
 echo "### Creating dummy certificate for $DOMAINS ..."
-path="/etc/letsencrypt/live/ssl"
-mkdir -p "$data_path/conf/live/ssl"
+path="/etc/letsencrypt/live/$domains"
+mkdir -p "$data_path/conf/live/$domains"
 docker-compose run --rm --entrypoint "\
   openssl req -x509 -nodes -newkey rsa:1024 -days 1\
     -keyout '$path/privkey.pem' \
@@ -55,9 +55,9 @@ echo
 
 echo "### Deleting dummy certificate for $DOMAINS ..."
 docker-compose run --rm --entrypoint "\
-  rm -Rf /etc/letsencrypt/live/ssl && \
-  rm -Rf /etc/letsencrypt/archive/ssl && \
-  rm -Rf /etc/letsencrypt/renewal/ssl.conf" certbot
+  rm -Rf /etc/letsencrypt/live/$domains && \
+  rm -Rf /etc/letsencrypt/archive/$domains && \
+  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
 echo
 
 
