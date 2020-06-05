@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -o allexport
-source .env.ssl.example
+source .env.ssl
 set +o allexport
 
 if ! [ -x "$(command -v docker-compose)" ]; then
@@ -23,7 +23,7 @@ echo "### Downloading recommended TLS parameters ... $email"
 echo "### Downloading recommended TLS parameters ... $staging"
 
 if [ -d "$data_path" ]; then
-  read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
+  read -p "Existing data found for $DOMAINS. Continue and replace existing certificate? (y/N) " decision
   if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
     exit
   fi
@@ -66,6 +66,7 @@ echo "### Requesting Let's Encrypt certificate for $DOMAINS ..."
 domain_args=""
 for domain in "${domains[@]}"; do
   domain_args="$domain_args -d $domain"
+  echo "$domain_args"
 done
 
 # Select appropriate email arg
