@@ -88,5 +88,9 @@ docker-compose run --rm --entrypoint "\
     --force-renewal" certbot
 echo
 
+docker-compose run --rm --entrypoint " \
+  cp -r /etc/letsencrypt/live/$domains/. \
+    /etc/letsencrypt/live/ssl/" certbot
+
 echo "### Reloading nginx ..."
 docker-compose exec reverse nginx -s reload
