@@ -89,7 +89,7 @@ docker-compose run --rm --entrypoint "\
 echo
 
 docker-compose run --rm --entrypoint " \
-  cp -r /etc/letsencrypt/live/$domains/. \
+  cp -a /etc/letsencrypt/live/$domains/. \
     /etc/letsencrypt/live/ssl/" certbot
 
 echo "### Reloading nginx ..."
